@@ -93,6 +93,21 @@ Open `http://localhost:3000`.
 npx vercel --prod
 ```
 
+## Latest Updates
+- Rebranded project identity to **FlowBoard** (UI metadata, package naming, docs).
+- Replaced external Trello-branded header logo with a custom neutral FlowBoard mark.
+- Improved drag-and-drop handling and overall board UX polish.
+- Added CSV import/export improvements:
+  - Header-based parsing
+  - Case-insensitive priority parsing
+  - Optional image URL import support
+- Added auth reliability improvements:
+  - Sign-in now handles active guest sessions automatically
+  - Fallback auth dialog shown even if anonymous session fails
+- Added guest-to-account task migration on successful sign-in/sign-up.
+- Enforced per-user task isolation using `ownerId` filtering.
+- Added startup diagnostics/scripts for env and Appwrite connectivity.
+
 ## Notes
 - Existing tasks created before `ownerId` rollout may need migration (set `ownerId` per row or recreate/import tasks).
 - If sign-in fails with an active guest session, the app now auto-replaces current session and retries.
