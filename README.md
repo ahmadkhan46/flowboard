@@ -1,34 +1,98 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FlowBoard
 
-## Getting Started
+A modern task board built with Next.js, Appwrite, and Zustand.
 
-First, run the development server:
+## Tech Stack
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Appwrite (Auth, Database, Storage)
+- Zustand (state management)
+- dnd-kit (drag and drop)
+
+## Features
+- Kanban board with `To Do`, `In Progress`, `Done` lanes
+- Drag and drop task movement
+- Create, edit, delete tasks
+- Task description and priority (`low`, `medium`, `high`)
+- Optional image uploads per task
+- Import / export tasks via CSV
+- Guest mode + email/password auth
+- Guest-task migration when user signs in/signs up
+- User-isolated data (`ownerId`-based filtering)
+
+## Prerequisites
+- Node.js 24.x (recommended)
+- npm 10+
+- Appwrite Cloud project
+
+## Environment Variables
+Create `.env.local`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+NEXT_PUBLIC_DATABASE_ID=
+NEXT_PUBLIC_TODOS_COLLECTION_ID=
+NEXT_PUBLIC_IMAGES_BUCKET_ID=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app validates these vars on `npm run dev` and `npm run build`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Appwrite Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 1) Auth
+In `Auth -> Settings / Methods`:
+- Enable `Email/Password`
+- Enable `Anonymous` (recommended)
 
-## Learn More
+### 2) Platforms
+In `Project -> Settings -> Platforms`, add your web hostnames (one platform per hostname), for example:
+- `flowboard.vercel.app`
+- `flowboard-yourteam.vercel.app`
 
-To learn more about Next.js, take a look at the following resources:
+### 3) Database
+Create a database and a tasks table/collection with at least:
+- `title` (string, required)
+- `status` (string, required) values used: `todo | inprogress | done`
+- `description` (string, optional)
+- `priority` (string, optional) values used: `low | medium | high`
+- `image` (string, optional) stores JSON `{ bucketID, fieldID }`
+- `ownerId` (string, required)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Permissions:
+- Enable row/document security
+- Table-level `Create`: allow authenticated users
+- Avoid broad `Any` read if you want strict user privacy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 4) Storage
+Create a bucket for task images and set read/write as needed for your auth model.
 
-## Deploy on Vercel
+## Local Development
+```bash
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Useful Scripts
+- `npm run dev` - start development server
+- `npm run build` - production build
+- `npm run start` - run production build locally
+- `npm run lint` - lint project
+- `npm run check-env` - verify required env vars
+- `npm run diagnose:appwrite` - diagnose Appwrite connectivity/permissions
+
+## Deploy (Vercel)
+1. Set the same env vars in Vercel Project Settings.
+2. Ensure Vercel Node.js version is `24.x`.
+3. Deploy:
+
+```bash
+npx vercel --prod
+```
+
+## Notes
+- Existing tasks created before `ownerId` rollout may need migration (set `ownerId` per row or recreate/import tasks).
+- If sign-in fails with an active guest session, the app now auto-replaces current session and retries.

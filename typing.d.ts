@@ -14,7 +14,10 @@ interface Todo {
     $createdAt: string
     title: string
     status: TypedColumn;
+    ownerId?: string;
     image?: Image;
+    description?: string;
+    priority?: 'low' | 'medium' | 'high';
 }
 
 interface Image {

@@ -1,9 +1,11 @@
+import { Query } from "appwrite"
 import { databases } from "@/appwrite"
 
-export const getTodosGroupedByColumn = async () => {
+export const getTodosGroupedByColumn = async (userId: string) => {
     const data = await databases.listDocuments(
     process.env.NEXT_PUBLIC_DATABASE_ID!,
     process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!,
+    [Query.equal("ownerId", userId)],
     )
     const todos = data.documents
 
@@ -20,6 +22,12 @@ export const getTodosGroupedByColumn = async () => {
             $createdAt: todo.$createdAt,
             title: todo.title,
             status: todo.status,
+            ownerId: todo.ownerId,
+            description: todo.description ?? '',
+            priority:
+              todo.priority === 'low' || todo.priority === 'medium' || todo.priority === 'high'
+                ? todo.priority
+                : 'medium',
             ...(todo.image && { image: JSON.parse(todo.image) })
         })
         return acc;

@@ -3,19 +3,19 @@ const types = [
     id: 'todo',
     name: 'Todo',
     description: 'A new task to be completed',
-    color:'bg-red-500',
+    color:'from-cyan-500 to-blue-600',
   },
   {
     id:'inprogress',
     name:'In Progress',
     description: 'A task that is currently being worked on',
-    color: 'bg-yellow-500',
+    color: 'from-amber-500 to-orange-500',
   },
   {
     id:'done',
     name:'Done',
     description: 'A task that has been completed',
-    color: 'bg-green-500',
+    color: 'from-emerald-500 to-green-600',
   },
 ]
 
@@ -23,23 +23,24 @@ import { useBoardStore } from '@/store/BoardStore'
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import React from 'react'
+import { useShallow } from 'zustand/react/shallow'
 
 function TaskTypeRadioGroup() {
-  const [setNewTaskType, newTaskType] = useBoardStore((state) => [
+  const [setNewTaskType, newTaskType] = useBoardStore(useShallow((state) => [
     state.setNewTaskType,
     state.newTaskType,
-  ])
+  ]))
 
   return (
     <div className='w-full py-5'>
-      <div className='mx-auto w-full max-v-md'>
+      <div className='mx-auto w-full max-w-md'>
         <RadioGroup
         value={newTaskType}
         onChange={(e) => {
           setNewTaskType(e)
         }}
         >
-          <div className='space-y-2'>
+          <div className='space-y-2.5'>
             {types.map((type) => (
               <RadioGroup.Option
               key={type.id}
@@ -47,26 +48,25 @@ function TaskTypeRadioGroup() {
               className={({ active, checked }) =>
               `${
                 active ?
-                'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                'ring-2 ring-cyan-500/50 ring-offset-2'
                 :''
               }
               ${
                 checked ? 
-                `${type.color} bg-opacity-75 text-white`
-                : 'bg-white'
+                `text-white border-transparent bg-gradient-to-r ${type.color}`
+                : 'bg-white border-slate-200 text-slate-800'
               }
-              relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none`
+              relative flex cursor-pointer rounded-xl border px-4 py-3 shadow-sm transition-all focus:outline-none`
               }
               >
-              {({ active, checked}) => (
+              {({ checked}) => (
                 <>
-                   <div className='flex w-full items-center justify-center'>
-                    <div className='flex items-center'>
-                      <div className='text sm'>
+                   <div className='flex w-full items-center justify-between gap-3'>
+                      <div className='text-sm'>
                         <RadioGroup.Label
                           as='p'
-                          className={`font-medium ${
-                          checked ? 'text-white' : 'text-gray-900'
+                          className={`font-semibold ${
+                          checked ? 'text-white' : 'text-slate-900'
                           }`}
                         >
                           {type.name}
@@ -74,12 +74,11 @@ function TaskTypeRadioGroup() {
                         <RadioGroup.Description
                           as='span'
                           className={`inline ${
-                          checked ? 'text-white' : 'text-gray-500'
+                          checked ? 'text-white/90' : 'text-slate-500'
                         }`}
                         >
                         <span>{type.description}</span>
                       </RadioGroup.Description>
-                    </div>
                   </div>
                   {checked && (
                     <div className='shrink-0 text-white'>

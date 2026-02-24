@@ -1,12 +1,17 @@
 import { ID, storage } from "@/appwrite"
 
-const uploadImage = async (file: File) => {
+const uploadImage = async (file: File, permissions?: string[]) => {
     if(!file) return;
+    const bucketId = process.env.NEXT_PUBLIC_IMAGES_BUCKET_ID;
+    if (!bucketId) {
+        throw new Error("Missing NEXT_PUBLIC_IMAGES_BUCKET_ID environment variable.");
+    }
 
     const fileUploaded = await storage.createFile(
-        '650ab7848f85bf526652',
+        bucketId,
         ID.unique(),
-        file
+        file,
+        permissions
     )
     return fileUploaded;
 }
